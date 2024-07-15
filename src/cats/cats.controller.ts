@@ -1,35 +1,26 @@
 import { Body, Controller, Get, Header, HttpCode, Param, Post, Redirect } from '@nestjs/common';
-import { CreateCatDto } from './create-cat.dto';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
 
   @Post()
-  @Header('Cache-Control', 'none') // customiza o response header
-  @HttpCode(204) // de 201 para 204 pode mudar o status code com o decorador httcode no handler
   async create(@Body() createCatDto: CreateCatDto) {
-    return 'adiciona um novo gato'
+    this.catsService.create(createCatDto)
   }
 
   @Get()
-  findAll(): string {
-    return 'retorna todos os gatos'
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id') id: any): string {
     return `isso retorna o gato número #${id}`
   }
-
-
-
-  // @Get('docs')
-  // @Redirect('https://docs.nestjs.com', 302)
-  // getDocs(@Query('version') version) {
-  //   if (version && version === '5') {
-  //     return { url: 'https://docs.nestjs.com/v5/' };
-  //   }
-  // }
   
 }
